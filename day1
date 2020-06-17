@@ -1,0 +1,55 @@
+import ddf.minim.*;
+Minim minim;
+AudioPlayer song;
+int spacing = 10;
+int border = spacing*2;
+int amplification = 20;
+
+int y = spacing;
+float ySteps;
+
+void setup() {
+  size(1000, 1000);
+  background(#17134B);
+  strokeWeight(1);
+  stroke(0);
+  noFill();
+  colorMode(RGB, 100);
+
+  
+  minim = new Minim(this);
+  song = minim.loadFile("openingtheme.mp3");
+  song.play();
+  
+}
+
+void draw() {
+  int screenSize = int((width-2*border)*(height-1.5*border)/spacing);
+  //int x = int(random(height));
+  int y = int(random(width));
+  int x = int(map(song.position(), 0, song.length(), 0, screenSize));
+  ySteps = x/(width-2*border);
+  x -= (width-2*border)*ySteps;
+  
+  float frequency = song.mix.get(int(x))*spacing*amplification;
+  ellipse(x+border, y*ySteps+border, frequency*5, frequency*5);
+   float freqMix = song.mix.get(int(x));
+ float freqLeft = song.left.get(int(x));
+ float freqRight = song.right.get(int(x));
+ float amplitude = song.mix.level();
+ float size = freqMix * spacing * amplification;
+ float red = map(freqLeft, -1, 1, 0, 200);
+ float green = map(freqRight, -1, 1, 0, 215);
+ float blue = map(freqMix, -1, 1, 0, 55);
+ float opacity = map(amplitude, 0, 0.4, 20, 100);
+ noStroke();
+ fill(random(255), random(255), random(255), opacity);
+ ellipse(x+border, y*ySteps+border, size*8, size*8); 
+ 
+}
+
+void stop() {
+  song.close();
+  minim.stop();
+  super.stop();
+}
